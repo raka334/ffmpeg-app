@@ -40,7 +40,7 @@ class FFmpegConverter(QWidget):
         layout.addWidget(self.codec_label)
 
         self.codec_combo = QComboBox(self)
-        self.codec_combo.addItems(['libx264 (H.264)', 'libx265 (H.265)' , '-c:v h264_nvenc -preset slow -b:v 5M'])
+        self.codec_combo.addItems(['H.264', 'H.265', 'Lossless with Nvidia GPU'])
         layout.addWidget(self.codec_combo)
 
         self.bitrate_label = QLabel('Bitrate (in kbps, e.g., 1000):')
@@ -75,7 +75,15 @@ class FFmpegConverter(QWidget):
     def convert_video(self):
         input_file = self.input_line.text()
         output_file = self.output_line.text()
-        selected_codec = self.codec_combo.currentText().split(' ')[0]  # Get codec (libx264 or libx265)
+
+        selected_codec = self.codec_combo.currentText()
+        if selected_codec == 'H.264':
+            selected_codec = 'libx264'
+        elif selected_codec == 'H.265':
+            selected_codec = 'libx265'
+        elif selected_codec == 'Lossless with Nvidia GPU':
+            selected_codec = 'hevc_nvenc -preset slow -pix_fmt yuv420p10le'  # Use h264_nvenc for H.264 with Nvidia GPU
+
         bitrate = self.bitrate_line.text()
         resolution = self.resolution_line.text()
 
